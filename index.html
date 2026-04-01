@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dota 2 — Расписание матчей</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">Dota 2 <span>/ Матчи</span></div>
+    <div class="header-meta" id="headerMeta">Загружаем...</div>
+  </header>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-val" id="cntAll">—</div><div class="stat-label">Всего матчей</div></div>
+    <div class="stat-item"><div class="stat-val" id="cntUpcoming">—</div><div class="stat-label">Предстоящих</div></div>
+    <div class="stat-item"><div class="stat-val" id="cntPast">—</div><div class="stat-label">Завершённых</div></div>
+    <div class="stat-item"><div class="stat-val" id="cntLeagues">—</div><div class="stat-label">Турниров</div></div>
+  </div>
+  <div class="controls">
+    <button class="filter-btn active" data-filter="all">Все</button>
+    <button class="filter-btn" data-filter="upcoming">Предстоящие</button>
+    <button class="filter-btn" data-filter="past">Прошедшие</button>
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="Поиск команды..." />
+    </div>
+  </div>
+  <div class="match-list" id="matchList">
+    <div class="empty-state">Загружаем расписание...</div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
