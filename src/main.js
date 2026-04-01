@@ -1,6 +1,7 @@
 import './style.css'
 
 const HAGLUND = 'https://red-sky-5edd.yarmolich-k.workers.dev/v1/matches'
+const STEAM_PROXY = 'https://frosty-pine-692a.yarmolich-k.workers.dev'
 const ODOTA   = 'https://api.opendota.com/api'
 const HERO_IMG = 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/'
 
@@ -246,6 +247,30 @@ function toggleDetail(hash) {
 }
 
 // ── Render ─────────────────────────────────────────────────────────────────
+// ── Live matches ───────────────────────────────────────────────────────────
+let liveGames = []
+
+async function loadLiveGames() {
+  try {
+    const r = await fetch(`${STEAM_PROXY}/live`)
+    const d = await r.json()
+    liveGames = d?.result?.games || []
+  } catch(e) {
+    liveGames = []
+  }
+}
+
+function findLiveGame(t1, t2) {
+  if (!t1 || !t2) return null
+  const n = s => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+  const n1 = n(t1), n2 = n(t2)
+  return liveGames.find(g => {
+    const rn = n(g.radiant_team?.team_name || '')
+    const dn = n(g.dire_team?.team_name || '')
+    return (rn.includes(n1) || n1.includes(rn)) && (dn.includes(n2) || n2.includes(dn))
+        || (rn.includes(n2) || n2.includes(rn)) && (dn.includes(n1) || n1.includes(dn))
+  }) || null
+}
 function render() {
   const query = document.getElementById('searchInput').value.trim().toLowerCase()
   let matches = allMatches
@@ -276,6 +301,7 @@ function render() {
         const t1   = m.teams[0]?.name || 'TBD'
         const t2   = m.teams[1]?.name || 'TBD'
         const past = isPast(m.startsAt)
+        const live = !past && findLiveGame(t1, t2)
         const liq  = m.leagueUrl
           ? `<a class="lp-link" href="${m.leagueUrl}" target="_blank" rel="noopener">LP ↗</a>`
           : ''
@@ -292,7 +318,7 @@ function render() {
                 <div class="league">${m.leagueName}</div>
                 <div class="badges">
                   <span class="badge badge-bo">${m.matchType}</span>
-                  <span class="badge ${past ? 'badge-past' : 'badge-future'}">${past ? 'завершён' : 'скоро'}</span>
+                  <span class="badge ${past ? 'badge-past' : live ? 'badge-live' : 'badge-future'}">${past ? 'завершён' : live ? '● live' : 'скоро'}</span>
                   ${liq}
                 </div>
               </div>
@@ -323,13 +349,17 @@ document.getElementById('searchInput').addEventListener('input', render)
 // ── Init ───────────────────────────────────────────────────────────────────
 ;(async () => {
   try {
-    await loadSchedule()
+    await Promise.all([loadSchedule(), loadLiveGames()])
     const now = Date.now()
     document.getElementById('cntAll').textContent      = allMatches.length
     document.getElementById('cntUpcoming').textContent = allMatches.filter(m => new Date(m.startsAt) > now).length
     document.getElementById('cntPast').textContent     = allMatches.filter(m => new Date(m.startsAt) <= now).length
     document.getElementById('cntLeagues').textContent  = new Set(allMatches.map(m => m.leagueName)).size
     document.getElementById('headerMeta').textContent  = `Обновлено: ${new Date().toLocaleTimeString('ru-RU')}`
+setInterval(async () => {
+  await loadLiveGames()
+  render()
+}, 30000)
     render()
   } catch(e) {
     document.getElementById('matchList').innerHTML =

@@ -99,3 +99,14 @@ header { padding: 2rem 2rem 1.5rem; border-bottom: 1px solid var(--border); disp
   .match-extra { grid-template-columns: 1fr 1fr; }
   .search-wrap input { width: 130px; }
 }
+.badge-live {
+  background: rgba(248,113,113,0.15);
+  color: #f87171;
+  border: 1px solid rgba(248,113,113,0.4);
+  animation: livepulse 1.5s infinite;
+}
+
+@keyframes livepulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
