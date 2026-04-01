@@ -261,16 +261,20 @@ async function loadLiveGames() {
 }
 
 function findLiveGame(t1, t2) {
-  if (!t1 || !t2) return null
+  if (!t1 || !t2 || t1 === 'TBD' || t2 === 'TBD') return null
+  if (!liveGames.length) return null
   const n = s => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '')
   const n1 = n(t1), n2 = n(t2)
+  if (!n1 || !n2) return null
   return liveGames.find(g => {
     const rn = n(g.radiant_team?.team_name || '')
     const dn = n(g.dire_team?.team_name || '')
+    if (!rn || !dn) return false
     return (rn.includes(n1) || n1.includes(rn)) && (dn.includes(n2) || n2.includes(dn))
         || (rn.includes(n2) || n2.includes(rn)) && (dn.includes(n1) || n1.includes(dn))
   }) || null
 }
+```
 function render() {
   const query = document.getElementById('searchInput').value.trim().toLowerCase()
   let matches = allMatches
@@ -301,7 +305,14 @@ function render() {
         const t1   = m.teams[0]?.name || 'TBD'
         const t2   = m.teams[1]?.name || 'TBD'
         const past = isPast(m.startsAt)
-        const live = !past && findLiveGame(t1, t2)
+        const live = !past && !isTBD(t1) && !isTBD(t2) && findLiveGame(t1, t2)
+```
+
+Сохраните, затем в cmd:
+```
+git add .
+git commit -m "fix: live only for known teams"
+git push origin main
         const liq  = m.leagueUrl
           ? `<a class="lp-link" href="${m.leagueUrl}" target="_blank" rel="noopener">LP ↗</a>`
           : ''
