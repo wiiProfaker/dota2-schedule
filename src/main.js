@@ -1,6 +1,6 @@
 import './style.css'
 
-const HAGLUND = 'https://dota.haglund.dev/v1/matches'
+const HAGLUND = 'https://red-sky-5edd.yarmolich-k.workers.dev/v1/matches'
 const ODOTA   = 'https://api.opendota.com/api'
 const HERO_IMG = 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/icons/'
 
